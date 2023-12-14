@@ -1,0 +1,22 @@
+{% load static %}
+{% with title="INAB" %}
+
+<!DOCTYPE html>
+<html>
+    {% include 'core/head.html' %}
+    <body class="m-0 font-sans text-base antialiased font-normal dark:bg-slate-900 leading-default bg-gray-50 text-slate-500">
+        <div class="absolute w-full bg-blue-500 dark:hidden min-h-75"></div>
+        {% include 'core/sidebar.html' %}
+            <main class="relative h-full max-h-screen transition-all duration-200 ease-in-out xl:ml-68 rounded-xl">
+                {% include 'core/navbar.html' %}
+                {% block content %}
+                {% endblock %}
+                {% include 'core/setting.html' %}
+                <script src="{% static 'js/plugins/chartjs.min.js' %}" async></script>
+                <script src="{% static 'js/plugins/perfect-scrollbar.min.js' %}" async></script>
+            </main>
+            <script src="{% static 'js/argon-dashboard-tailwind.js' %}?v=1.0.1" async></script>
+        </div>
+    </body>
+</html>
+{% endwith %}
