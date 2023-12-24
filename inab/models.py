@@ -14,7 +14,7 @@ class Role(models.Model):
 		('teacher', 'teacher'),
 		('guruNilam', 'guruNilam'),
 	]
-	role = models.CharField(primary_key=True, choices=RoleType)
+	role = models.CharField(primary_key=True, choices=RoleType, max_length=50)
 
 class User(models.Model):
 	username = models.CharField(max_length=255, primary_key=True)
