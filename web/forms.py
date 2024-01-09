@@ -1,6 +1,6 @@
 # your_app/forms.py
 from django import forms
-from .models import Student
+from inab.models import Student
 
 class StudentRegistrationForm(forms.ModelForm):
     class Meta:

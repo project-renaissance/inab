@@ -8,7 +8,36 @@ class DashboardView(View):
 
     def get(self, request, *args, **kwargs):
         context = {
+            'name' : 'Home',
             'active_page': 'dashboard',  # Set the active page for the dashboard view
+        }
+        return render(request, self.template_name, context)
+
+class BookView(View):
+    template_name = 'pages/book.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'name' : 'Book',
+            'active_page': 'book',
+            'books' : [
+                {
+                    'id':'123',
+                    'title': 'One Hundred Years of Solitude',
+                    'author' : "Gabriel Garcia Marquez",
+                    'genre' : 'Action',
+                    'pages' : 775,
+                    'available' : False
+                },
+                {
+                    'id': '235',
+                    'title': 'Bagaikan Puteri',
+                    'author': "Ramlee Awang Murshid",
+                    'genre': 'Romance',
+                    'pages': 578,
+                    'available': True
+                }
+            ]
         }
         return render(request, self.template_name, context)
 
