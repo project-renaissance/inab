@@ -24,26 +24,34 @@
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
             <i class="ni ni-books text-primary text-sm opacity-10"></i>
           </div>
-          <span class="nav-link-text ms-1">List of Books</span>
+          <span class="nav-link-text ms-1">Books List</span>
         </a>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link {% if request.path == '/request' %}active{% endif %}" href="/request">
+        <a class="nav-link {% if request.path == '/book-request' %}active{% endif %}" href="/book-request">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
             <i class="ni ni-archive-2 text-secondary text-sm opacity-10"></i>
           </div>
-          <span class="nav-link-text ms-1">Request List</span>
+          <span class="nav-link-text ms-1">Borrow Records</span>
         </a>
       </li>
       <li class="nav-item">
+    <a class="nav-link {% if request.path == '/school' %}active{% endif %}" href="/school">
+          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="ni ni-archive-2 text-secondary text-sm opacity-10"></i>
+          </div>
+          <span class="nav-link-text ms-1">Schools List</span>
+        </a>
+      </li>
+      <!-- <li class="nav-item">
         <a class="nav-link disabled {% if request.path == '/log' %}active{% endif %}" href="/log">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
             <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
           </div>
           <span class="nav-link-text ms-1">Book Log</span>
         </a>
-      </li>
+      </li> -->
     </ul>
   </div>
   <div class="sidenav-footer mx-3">

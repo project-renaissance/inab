@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block content %}
+
 <div class="container-fluid py-4 pt-3">
   <div class="row">
     <div class="col">
@@ -9,7 +10,7 @@
         <div class="card-header pb-0">
           <div class="row align-items-center">
             <div class="col">
-                <h6 class="font-weight-bolder">List of Books</h6>
+                <h6 class="font-weight-bolder">Borrow Records</h6>
             </div>
             <div class="col-2">
               <div class="input-group">
@@ -24,28 +25,28 @@
             <table class="table align-items-center mb-0">
               <thead class="h6">
                 <tr>
-                  <th class="text-uppercase text-xxs font-weight-bolder ps-2">Title</th>
-                  <th class="align-middle text-uppercase text-xxs font-weight-bolder ps-2">Author</th>
-                  <th class="align-middle text-uppercase text-xxs font-weight-bolder ps-2">Genre</th>
-                  <th class="align-middle text-uppercase text-xxs font-weight-bolder ps-2">Pages</th>
-                  <th class="align-middle text-uppercase text-xxs font-weight-bolder ps-2">Availability</th>
-                  <th class="w-10 align-middle text-center text-uppercase text-xxs font-weight-bolder pe-10 ps-2">Actions</th>
+                  <th class="text-uppercase text-xxs font-weight-bolder ps-2">Student Name</th>
+                  <th class="align-middle text-uppercase text-xxs font-weight-bolder ps-2">Borrow Report</th>
+                  <th class="align-middle text-uppercase text-xxs font-weight-bolder ps-2">Status</th>
+                  <th class="align-middle text-uppercase text-xxs font-weight-bolder ps-2">Date</th>
                 </tr>
               </thead>
               <tbody id="employeeTable">
-                {% for book in book_list %}
-                  <tr id="{{ book.id }}">
+                {% for borrow in borrow_list %}
+                  <tr id="{{ borrow.bookID }}">
                     <td class="w-50">
-                      <p class="text-xs font-weight-bold mb-0">{{ book.title }}</p>
+                      <p class="text-xs font-weight-bold mb-0">{{ borrow.studentID.name }}</p>
                     </td>
                     <td class="align-middle text-sm">
-                      <p class="text-xs font-weight-bold mb-0">{{ book.author }}</p>
+                      <p class="text-xs font-weight-bold mb-0">{{ borrow.borrowReport }}</p>
                     </td>
                     <td class="align-middle text-sm">
-                      <p class="text-xs font-weight-bold mb-0">{{ book.genre }}</p>
-                    </td>
+                        <p class="text-xs font-weight-bold mb-0" style="color: {% if borrow.borrowStatus %}green{% else %}red{% endif %}">
+                            {{ borrow.borrowStatus }}
+                        </p>
+                    </td>                    
                     <td class="align-middle text-sm">
-                      <p class="text-xs font-weight-bold mb-0">{{ book.pages }}</p>
+                      <p class="text-xs font-weight-bold mb-0">{{ borrow.date }}</p>
                     </td>
                     <td class="align-middle text-sm">
                       <span class="badge badge-sm {% if book.available %}bg-gradient-success{% else %}bg-gradient-danger{% endif %}">{{ book.available }}</span>

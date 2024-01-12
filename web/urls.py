@@ -19,11 +19,13 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('',  views.DashboardView.as_view(), name='dashboard'),
-    path('student', views.StudentView.as_view(), name='student'),
-    path('teacher', views.TeacherView.as_view(), name='teacher'),
-    path('login', views.LoginView.as_view(), name='login'),
-    path('profile', views.ProfileView.as_view(), name='profile'),
-    path('register', views.RegisterView.as_view(), name='register'),
-    path('book', views.BookView.as_view(), name='book'),
+    path("", views.DashboardView.as_view(), name="dashboard"),
+    path("student", views.StudentView.as_view(), name="student"),
+    path("teacher", views.TeacherView.as_view(), name="teacher"),
+    path("login", views.LoginView.as_view(), name="login"),
+    path("profile", views.ProfileView.as_view(), name="profile"),
+    path("register", views.RegisterView.as_view(), name="register"),
+    path("book", views.BookView.as_view(), name="book"),
+    path("book-request", views.BookRequestView.as_view(), name="book-request"),
+    path("school", views.SchoolView.as_view(), name="school"),
 ]
