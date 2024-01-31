@@ -21,4 +21,7 @@ coverage_html
 .devcontainer
 _local
 
+env
+.env
+
 .idea
