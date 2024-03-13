@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from faker import Faker
+from django.contrib.auth.hashers import make_password
 from random import choice, sample
 from django.utils import timezone
 from inab.models import (
@@ -23,7 +24,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.create_schools()
         self.create_classrooms()
-        # self.create_roles()
+        self.create_roles()
         self.create_users()
         self.create_libraries()
         self.create_books()
@@ -38,15 +39,15 @@ class Command(BaseCommand):
         schools = School.objects.all()
         classrooms = [
             Classroom(
-                name=fake.word(), description=fake.sentence(), schoolID=choice(schools)
+                name=fake.word(), description=fake.sentence(), school=choice(schools)
             )
             for _ in range(20)
         ]
         Classroom.objects.bulk_create(classrooms)
 
-    # def create_roles():
-    #     roles = [role[0] for role in Role.RoleType]
-    #     Role.objects.bulk_create([Role(role=r) for r in roles])
+    def create_roles(self):
+        roles = ["student", "teacher", "guruNilam"]
+        Role.objects.bulk_create([Role(role=r) for r in roles])
 
     def create_users(self):
         classrooms = Classroom.objects.all()
@@ -60,21 +61,28 @@ class Command(BaseCommand):
                 birthDate=fake.date_of_birth(),
                 phoneNo=fake.phone_number(),
                 email=fake.email(),
-                classID=choice(classrooms),
+                classroom=choice(classrooms),
                 awardList=fake.random_int(0, 100),
             )
             user.save()
             user.role.set(sample(list(roles), fake.random_int(1, 3)))
+
+            # Set a default password (you can change it as needed)
+            user.password = make_password("password123")
+            user.save()
 
     def create_libraries(self):
         schools = School.objects.all()
         librarians = User.objects.filter(role__role="teacher")
 
         libraries = [
-            Library(schoolID=choice(schools), librarianID=choice(librarians))
-            for _ in range(5)
+            Library(name=fake.word(), school=choice(schools)) for _ in range(5)
         ]
         Library.objects.bulk_create(libraries)
+
+        # Add librarians to libraries
+        for library in Library.objects.all():
+            library.librarians.set(sample(list(librarians), fake.random_int(1, 3)))
 
     def create_books(self):
         libraries = Library.objects.all()
@@ -88,11 +96,13 @@ class Command(BaseCommand):
                 genre=choice(genres),
                 publisher=fake.company(),
                 insertedAt=timezone.now(),
-                libraryID=choice(libraries),
             )
             for _ in range(50)
         ]
         Book.objects.bulk_create(books)
+        # Adding books to libraries
+        for book in Book.objects.all():
+            book.library.set(sample(list(libraries), fake.random_int(1, 3)))
 
     def create_nilams(self):
         users = User.objects.filter(role__role="student")
@@ -104,7 +114,7 @@ class Command(BaseCommand):
                 author=fake.name(),
                 genre=choice(["action", "fantasy"]),
                 publisher=fake.company(),
-                studentID=choice(users),
+                student=choice(users),
                 evaluationComment=fake.sentence(),
                 evaluationStatus=choice(["pending", "approved", "rejected"]),
             )
@@ -118,11 +128,11 @@ class Command(BaseCommand):
 
         borrows = [
             Borrow(
-                bookID=choice(books),
+                book=choice(books),
                 borrowStatus=choice([True, False]),
                 date=timezone.now(),
                 borrowReport=fake.sentence(),
-                studentID=choice(students),
+                student=choice(students),
             )
             for _ in range(30)
         ]
@@ -133,7 +143,7 @@ class Command(BaseCommand):
 
         game_profiles = [
             GameProfile(
-                studentID=choice(students),
+                student=choice(students),
                 rank=fake.word(),
                 record=fake.sentence(),
                 characterList=fake.words(5),

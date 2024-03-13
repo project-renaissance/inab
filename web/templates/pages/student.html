@@ -1,7 +1,93 @@
-{% extends 'core/base.html' %}
-{% load static %}
+{% extends 'core/base.html' %} {% load static %} {% block content %}
+<div class="container-fluid py-4 pt-3">
+    <div class="row">
+        <div class="col">
+            {% if not classroom_id and not school_id %}
+                <!-- Display schools -->
+                <div class="card border-primary mb-3">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title">
+                            <a href="#" class="text-black">School</a>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for school in schools %}
+                                <li class="list-group-item">
+                                    <p class="mb-1"><a href="?school_id={{ school.id }}">{{ school.name }}</a></p>
+                                    <small>School ID : {{ school.id }} </small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+            {% if school_id and not classroom_id %}
+                <!-- Display classrooms if school_id is selected -->
+                <div class="card border-info mt-4">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title">{{ selected_school.name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for classroom in classrooms %}
+                                <li class="list-group-item">
+                                    <p class="mb-1"><a href="?school_id={{ school_id }}&classroom_id={{ classroom.id }}">{{ classroom.name }}</a></p>
+                                    <small>Classroom ID : {{ classroom.id }} </small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
 
-{% block content %}
+            {% if school_id and classroom_id %}
+                <!-- Display students -->
+                <div class="card border-success mt-4">
+                    <div class="card-header bg-light text-white">
+                        <h5 class="card-title">{{ selected_classroom.name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive p-0 overflow-hidden">
+                            <table class="table align-items-center mb-0 table-striped table-hover">
+                                <thead class="h6">
+                                    <tr>
+                                        <th class="text-uppercase text-sm font-weight-bolder ps-2">
+                                            Name
+                                        </th>
+                                        <th class="align-middle text-uppercase text-sm font-weight-bolder ps-2">
+                                            Username
+                                        </th>
+                                        <th class="align-middle text-uppercase text-sm font-weight-bolder ps-2">
+                                            Birth Date
+                                        </th>
+                                        <th class="align-middle text-uppercase text-sm font-weight-bolder ps-2">
+                                            Phone Number
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                        <tr>
+                                            <td class="text-sm font-weight-bold">{{ student.name }}</td>
+                                            <td class="align-middle text-sm">{{ student.username }}</td>
+                                            <td class="align-middle text-sm">{{ student.birthDate }}</td>
+                                            <td class="align-middle text-sm">{{ student.phoneNo }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+
+{% comment %} 
 <div class="container-fluid py-4 pt-3">
   <div class="row">
     <div class="col">
@@ -9,12 +95,20 @@
         <div class="card-header pb-0">
           <div class="row align-items-center">
             <div class="col">
-                <h6 class="font-weight-bolder">Employees</h6>
+              <h6 class="font-weight-bolder">Dashboard Users List</h6>
             </div>
             <div class="col-2">
               <div class="input-group">
-                <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
-                <input type="text" class="form-control" placeholder="Type here..." onfocus="focused(this)" onfocusout="defocused(this)">
+                <span class="input-group-text text-body"
+                  ><i class="fas fa-search" aria-hidden="true"></i
+                ></span>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Type here..."
+                  onfocus="focused(this)"
+                  onfocusout="defocused(this)"
+                />
               </div>
             </div>
           </div>
@@ -24,33 +118,84 @@
             <table class="table align-items-center mb-0">
               <thead class="h6">
                 <tr>
-                  <th class="text-uppercase text-xxs font-weight-bolder ps-2">Name</th>
-                  <th class="align-middle text-uppercase text-xxs font-weight-bolder ps-2">Info</th>
-                  <th class="align-middle text-uppercase text-xxs font-weight-bolder ps-2">Setup</th>
-                  <th class="w-10 align-middle text-center text-uppercase text-xxs font-weight-bolder pe-10 ps-2">Actions</th>
+                  <th
+                    class="align-middle text-uppercase text-xxs font-weight-bolder ps-2"
+                  >
+                    Name
+                  </th>
+                  <th
+                    class="align-middle text-uppercase text-xxs font-weight-bolder ps-2"
+                  >
+                    Username
+                  </th>
+                  <th
+                    class="align-middle text-uppercase text-xxs font-weight-bolder ps-2"
+                  >
+                    B/o/D
+                  </th>
+                  <th
+                    class="align-middle text-uppercase text-xxs font-weight-bolder ps-2"
+                  >
+                    Phone No
+                  </th>
                 </tr>
               </thead>
               <tbody id="employeeTable">
-                {% for user in users %}
-                  <tr id="{{ user.id }}">
-                    <td class="w-50">
-                      <p class="text-xs font-weight-bold mb-0">{{ user.name }}</p>
-                    </td>
-                    <td class="align-middle text-sm">
-                      <span class="badge badge-sm {% if user.infoStatus %}bg-gradient-success{% else %}bg-gradient-danger{% endif %}">{{ user.infoStatus }}</span>
-                    </td>
-                    <td class="align-middle text-sm">
-                      <span class="badge badge-sm {% if user.taskStatus %}bg-gradient-success{% else %}bg-gradient-danger{% endif %}">{{ user.taskStatus }}</span>
-                    </td>
-                    <td class="align-middle text-sm">
-                      <button class="btn btn-icon btn-sm btn-warning btn-tooltip mb-0 p-2" onclick="addRow(this, {{user.id}})" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit" data-container="body" data-animation="true">
-                        <i class="ni ni-archive-2"></i>
-                      </button>
-                      <button class="btn btn-icon btn-sm btn-danger btn-tooltip mb-0 p-2" onclick="deleteUser({{ user.id }})" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete" data-container="body" data-animation="true">
-                        <i class="ni ni-fat-remove 1em"></i>
-                      </button>
-                    </td>
-                  </tr>
+                {% for user in user_list %}
+                <tr id="{{ school.id }}">
+                  <td class="w-50">
+                    <p class="align-middle text-xs font-weight-bold mb-0">
+                      {{ user.name }}
+                    </p>
+                  </td>
+                  <td class="align-middle text-sm">
+                    <p class="text-xs font-weight-bold mb-0">
+                      {{ user.username }}
+                    </p>
+                  </td>
+                  <td class="align-middle text-sm">
+                    <p class="text-xs font-weight-bold mb-0">
+                      {{ user.birthDate }}
+                    </p>
+                  </td>
+                  <td class="align-middle text-sm">
+                    <p class="text-xs font-weight-bold mb-0">
+                      {{ user.phoneNo }}
+                    </p>
+                  </td>
+                  <td class="align-middle text-sm">
+                    <span
+                      class="badge badge-sm {% if book.available %}bg-gradient-success{% else %}bg-gradient-danger{% endif %}"
+                      >{{ book.available }}</span
+                    >
+                  </td>
+                  <td class="align-middle text-sm">
+                    <button
+                      class="btn btn-icon btn-sm btn-warning btn-tooltip mb-0 p-2"
+                      onclick="addRow(this, {{book.id}})"
+                      type="button"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Edit"
+                      data-container="body"
+                      data-animation="true"
+                    >
+                      <i class="ni ni-archive-2"></i>
+                    </button>
+                    <button
+                      class="btn btn-icon btn-sm btn-danger btn-tooltip mb-0 p-2"
+                      onclick="deleteUser({{ book.id }})"
+                      type="button"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Delete"
+                      data-container="body"
+                      data-animation="true"
+                    >
+                      <i class="ni ni-fat-remove 1em"></i>
+                    </button>
+                  </td>
+                </tr>
                 {% endfor %}
               </tbody>
             </table>
@@ -60,6 +205,86 @@
     </div>
   </div>
 </div>
+<script>
+  var newRow = $(`{% include 'core/editBox.html' %}`);
+  $("#username").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    if (value !== "") {
+      $.ajax({
+        url: "getSearch",
+        method: "POST",
+        data: {
+          csrfmiddlewaretoken: `{{csrf_token}}`,
+          search: value,
+        },
+        success: function (data) {
+          $("#searchResult").empty();
+          if (data.length > 0) {
+            $("#searchResult").addClass("show");
+            $.each(data, function (id, value) {
+              $("#searchResult").append(
+                `<li><a class="dropdown-item" href="javascript:keyNames('${value}')">${value}</a></li>`
+              );
+            });
+          } else {
+            $("#searchResult").removeClass("show");
+          }
+        },
+      });
+    } else {
+      $("#searchResult").removeClass("show");
+    }
+  });
 
+  function keyNames(value) {
+    $("#username").val(value);
+    $("#searchResult").removeClass("show");
+  }
+
+  function addRow(button, userId) {
+    $("#editBox").remove();
+    var targetRowId = $(button).closest("tr").attr("id");
+
+    $.ajax({
+      url: `/getUserData/${userId}/`,
+      method: "GET",
+      success: function (data) {
+        if ("error" in data) {
+          console.error(data.error);
+        } else {
+          console.log(data);
+          //$('#locationDropDown').text(`${data.location} - ${data.cost}`);
+          $("#LegalName").val(data.name);
+          $("#PreferredName").val(data.preferredName);
+          $("#Username").val(data.username);
+          $("#personalEmail").val(data.personalEmail);
+          $("#sonyEmail").val(data.sonyEmail);
+          $("#directManager").val(data.manager);
+          $("#startDate").val(data.startDate);
+          changeGroup(
+            "locationDropDown",
+            "location",
+            `${data.cost} - ${data.location}`
+          );
+          changeGroup("employeeDropdown", "employee", data.employeeType);
+          changeGroup("permissionDropDown", "shotgrid", data.shotgrid);
+          getTasks(data.id, data.department, data.role, function () {
+            userID = data.id;
+            $.each(data.tasks, function (index, task) {
+              $("#" + task.name.replace(/[ ,()./]+/g, "")).prop(
+                "checked",
+                true
+              );
+              //$('#EmploymentDocumentation').prop("checked",true);
+            });
+          });
+        }
+      },
+      error: function (xhr, status, error) {
+        console.error(error);
+      },
+    });
+  }
+</script> {% endcomment %}
 
 {% endblock %}

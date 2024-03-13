@@ -1,0 +1,87 @@
+{% extends 'core/base.html' %} {% block content %}
+<div class="container-fluid py-4 pt-3">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <!-- Increase the column size to make it wider -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Add School</h5>
+        </div>
+        <div class="card-body">
+          <form method="post" action="/add_school/" id="addSchoolForm">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="name" class="form-label">School Name</label>
+              <input
+                class="form-control"
+                type="text"
+                name="name"
+                id="name"
+                required
+              />
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-success btn-lg"
+              onclick="addSchool()"
+            >
+              Add School
+            </button>
+            <!-- Increase the button size -->
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  {% comment %} function changeLibrary(dropdownId, libraryName, libraryId) {
+    var selectedLibrary = libraryName.trim();
+    console.log(selectedLibrary);
+    $("#" + dropdownId).text(selectedLibrary);
+
+    $("#libraryInput").val(libraryId);
+    $("#" + dropdownId)
+      .closest(".dropdown")
+      .find(".dropdown-toggle")
+      .text(selectedLibrary);
+  } {% endcomment %}
+  function addSchool() {
+
+    var name = $("#name").val();
+
+
+
+      // Check if required fields are not empty
+    if (!name ) {
+        console.error("Error adding school: School name are required");
+        return false;  // Prevent default form submission
+    }
+
+  // Serialize form data
+    var formData = $("#addSchoolForm").serialize();
+
+    $.ajax({
+      url: "/add_school/",
+      method: "POST",
+      data: formData,
+      success: function (response) {
+        if (response.success) {
+          // Handle success, e.g., redirect to the school list page
+          alert("School '" + name + "' created successfully!");
+
+          window.location.href = "/school";
+        } else {
+          // Handle validation errors
+          console.error("Error adding school:", response.errors);
+        }
+      },
+      error: function (xhr, status, error) {
+        console.error("Error adding school:", status, error);
+      },
+    });
+    return false; // Prevent default form submission
+  }
+</script>
+{% endblock %}

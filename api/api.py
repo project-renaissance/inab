@@ -7,6 +7,7 @@ from typing import List
 from .serializers import (
     ClassroomSchema,
     BookSchema,
+    BookSchemaResponse,
     ClassroomDetailSchema,
     SchoolSchema,
     NilamSerializer,
@@ -67,8 +68,8 @@ def list_classrooms(request):
     classroom_details = []
 
     for classroom in classrooms:
-        teacher = User.objects.filter(classID=classroom, role__role="teacher").first()
-        students = User.objects.filter(classID=classroom, role__role="student")
+        teacher = User.objects.filter(classroom=classroom, role__role="teacher").first()
+        students = User.objects.filter(classroom=classroom, role__role="student")
 
         classroom_data = {
             "id": classroom.id,
@@ -101,8 +102,8 @@ def get_classroom(request, id: int):
     if not classroom:
         raise HttpError(404, "Not Found")
 
-    teacher = User.objects.filter(classID=classroom, role__role="teacher").first()
-    students = User.objects.filter(classID=classroom, role__role="student")
+    teacher = User.objects.filter(classroom=classroom, role__role="teacher").first()
+    students = User.objects.filter(classroom=classroom, role__role="student")
 
     classroom_data = {
         "id": classroom.id,
@@ -128,10 +129,16 @@ def get_classroom(request, id: int):
 
 # 2: Library
 # Get Books List
-@router.get("/book", response=List[BookSchema])
+@router.get("/book", response=List[BookSchemaResponse])
 def list_books(request):
     books = Book.objects.all()
     return books
+
+
+@router.get("/book/{id}", response=BookSchemaResponse)
+def get_book(request, id: int):
+    book = get_object_or_404(Book, id=id)
+    return book
 
 
 # 3: Nilam

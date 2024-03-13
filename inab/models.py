@@ -1,14 +1,24 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser, Group, Permission
 
 
 class School(models.Model):
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
 
 class Classroom(models.Model):
     name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
-    schoolID = models.ForeignKey(School, on_delete=models.CASCADE)
+    description = models.TextField()
+    school = models.ForeignKey(School, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
 
 
 class Role(models.Model):
@@ -17,23 +27,28 @@ class Role(models.Model):
         ("teacher", "teacher"),
         ("guruNilam", "guruNilam"),
     ]
-    role = models.CharField(primary_key=True, choices=RoleType, max_length=50)
+    role = models.CharField(choices=RoleType, max_length=50)
 
 
-class User(models.Model):
-    username = models.CharField(max_length=255, primary_key=True)
+class User(AbstractUser):
     name = models.CharField(max_length=255)
     birthDate = models.DateField(null=True)
-    phoneNo = models.CharField(max_length=255, null=True)
-    email = models.EmailField()
-    classID = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    phoneNo = models.CharField(max_length=255, blank=True)
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, null=True)
     role = models.ManyToManyField(Role)
-    awardList = models.IntegerField()
+    awardList = models.IntegerField(null=True)
+
+    # Add related_name to avoid clashes
+    groups = models.ManyToManyField(Group, related_name="inab_user_groups")
+    user_permissions = models.ManyToManyField(
+        Permission, related_name="inab_user_permissions"
+    )
 
 
 class Library(models.Model):
-    schoolID = models.ForeignKey(School, on_delete=models.CASCADE)
-    librarianID = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    librarians = models.ManyToManyField(User)
 
 
 class Book(models.Model):
@@ -42,38 +57,41 @@ class Book(models.Model):
         ("fantasy", "fantasy"),
     ]
     title = models.CharField(max_length=255)
-    pages = models.IntegerField()
-    author = models.CharField(max_length=255)
-    genre = models.CharField(max_length=255, choices=GENRE)
-    publisher = models.CharField(max_length=255)
-    insertedAt = models.DateField()
+    pages = models.IntegerField(null=True)
+    author = models.CharField(max_length=255, blank=True)
+    genre = models.CharField(max_length=255, choices=GENRE, blank=True)
+    publisher = models.CharField(max_length=255, blank=True)
+    insertedAt = models.DateField(auto_now_add=True)
     updatedAt = models.DateField(null=True)
     deletedAt = models.DateField(null=True)
-    libraryID = models.ForeignKey(Library, on_delete=models.CASCADE)
+    library = models.ManyToManyField(Library)
+
+    def __str__(self):
+        return self.title
 
 
 class Nilam(models.Model):
     title = models.CharField(max_length=255)
-    pages = models.IntegerField()
-    author = models.CharField(max_length=255)
-    genre = models.CharField(max_length=255)
-    publisher = models.CharField(max_length=255)
-    studentID_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    evaluationComment = models.CharField(max_length=255, null=True)
-    evaluationStatus = models.CharField(max_length=255, null=True)
+    pages = models.IntegerField(null=True)
+    author = models.CharField(max_length=255, blank=True)
+    genre = models.CharField(max_length=255, blank=True)
+    publisher = models.CharField(max_length=255, blank=True)
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    evaluationComment = models.CharField(max_length=255, blank=True)
+    evaluationStatus = models.CharField(max_length=255, blank=True)
 
 
 class Borrow(models.Model):
-    bookID = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
     borrowStatus = models.BooleanField(default=True)
     date = models.DateField()
-    borrowReport = models.CharField(max_length=255)
-    studentID = models.ForeignKey(User, on_delete=models.CASCADE)
+    borrowReport = models.CharField(max_length=255, blank=True)
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class GameProfile(models.Model):
-    studentID = models.ForeignKey(User, on_delete=models.CASCADE)
-    rank = models.CharField(max_length=255)
-    record = models.CharField(max_length=255)
-    characterList = models.CharField(max_length=255)
-    itemList = models.CharField(max_length=255)
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    rank = models.CharField(max_length=255, blank=True)
+    record = models.CharField(max_length=255, blank=True)
+    characterList = models.CharField(max_length=255, blank=True)
+    itemList = models.CharField(max_length=255, blank=True)

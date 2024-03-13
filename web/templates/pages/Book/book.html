@@ -1,0 +1,264 @@
+{% extends 'core/base.html' %} {% load static %} {% block content %}
+<div class="container-fluid py-4 pt-3">
+  <div class="row">
+    <div class="col">
+      <div class="card mb-4">
+        <div class="card-header pb-0">
+          <div class="d-flex item-center justify-content-between">
+            <div class="p-2 flex-grow-1">
+              <h6 class="font-weight-bolder text-lg">Book Lists</h6>
+            </div>
+            <div class="p-2">
+              <a href="{% url 'add_book' %}" class="btn bg-gradient-success"
+                >Add Book</a
+              >
+            </div>
+            <div class="p-2">
+              <input
+                id="searchInput"
+                type="text"
+                class="form-control"
+                placeholder="Type here..."
+                onfocus="focused(this)"
+                onfocusout="defocused(this)"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="card-body px-2 pt-0 pb-2 pt-2">
+          <div class="table-responsive p-0 overflow-hidden">
+            <table
+              class="table align-items-center mb-0 table-striped table-hover"
+            >
+              <thead class="h6">
+                <tr>
+                  <th class="text-uppercase text-sm font-weight-bolder ps-2">
+                    Title
+                  </th>
+                  <th
+                    class="align-middle text-uppercase text-sm font-weight-bolder ps-2"
+                  >
+                    Author
+                  </th>
+                  <th
+                    class="align-middle text-uppercase text-sm font-weight-bolder ps-2"
+                  >
+                    Genre
+                  </th>
+                  <th
+                    class="align-middle text-uppercase text-sm font-weight-bolder ps-2"
+                  >
+                    Pages
+                  </th>
+                  <th
+                    class="w-10 align-middle text-center text-uppercase text-sm font-weight-bolder pe-10 ps-2 text-end"
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="bookTable">
+                {% for book in book_list %}
+                <tr id="{{ book.id }}">
+                  <td class="w-50 book-title">
+                    <p class="text-sm font-weight-bold mb-0">
+                      {{ book.title }}
+                    </p>
+                  </td>
+                  <td class="align-middle text-sm">
+                    <p class="text-sm font-weight-bold mb-0">
+                      {{ book.author }}
+                    </p>
+                  </td>
+                  <td class="align-middle text-sm">
+                    <p class="text-sm font-weight-bold mb-0">
+                      {{ book.genre }}
+                    </p>
+                  </td>
+                  <td class="align-middle text-sm">
+                    <p class="text-sm font-weight-bold mb-0">
+                      {{ book.pages }}
+                    </p>
+                  </td>
+                  <td class="align-middle text-sm">
+                    <button
+                      class="btn bg-gradient-warning btn-tooltip mb-0 p-2"
+                      onclick="editRow(this, {{book.id}})"
+                      type="button"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Edit this book"
+                      data-container="body"
+                      data-animation="true"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      class="btn bg-gradient-danger btn-tooltip mb-0 p-2"
+                      onclick="deleteRow(this, {{ book.id }})"
+                      type="button"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Delete this book"
+                      data-container="body"
+                      data-animation="true"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+
+              <tr id="searchResultsRow" style="display: none">
+                <td colspan="5">
+                  <ul id="searchResultsList" class="list-unstyled mb-0"></ul>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  if (window.jQuery) {
+    console.log("jQuery is loaded!");
+  } else {
+    console.log("jQuery is not loaded!");
+  }
+  var newRow = $(`{% include 'core/editBox.html' %}`);
+
+  // Search Function
+  $("#searchInput").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    console.log(value);
+    if (value !== "") {
+      $.ajax({
+        url: "/search_books/",
+        method: "POST",
+        data: {
+          csrfmiddlewaretoken: `{{csrf_token}}`,
+          search: value,
+        },
+        success: function (data) {
+          $("#searchResultsList").empty();
+          if (data.length > 0) {
+            // Display search results
+            $("#searchResultsRow").show();
+            $.each(data, function (id, book) {
+              $("#searchResultsList").append(
+                `<li><a href="javascript:keyNames('${book.title}')">${book.title}</a></li>`
+              );
+            });
+          } else {
+            // No results, hide the search results row
+            $("#searchResultsRow").hide();
+          }
+        },
+      });
+    } else {
+      // Empty search input, hide the search results row
+      $("#searchResultsRow").hide();
+    }
+  });
+
+  function editRow(button, bookId) {
+    var targetRowId = $(button).closest("tr").attr("id");
+    var editBox = $("#editBox");
+
+    if (editBox.length > 0) {
+      // If edit box is already present, remove it (toggle off)
+      editBox.remove();
+    } else {
+      // If edit box is not present, add it (toggle on)
+      var newRow = $(`{% include 'core/editBox.html' %}`).attr(
+        "data-book-id",
+        bookId
+      );
+
+      // Set the bookId in the hidden input field
+      newRow.find("#bookIdInput").val(bookId);
+
+      $("#" + targetRowId).after(newRow);
+
+      // Fetch book details using bookId and update the edit box
+      $.ajax({
+        url: `/get_book/${bookId}/`,
+        method: "GET",
+        success: function (book) {
+          // Populate the edit box fields with book details
+          $("#Title").val(book.title);
+          $("#Author").val(book.author);
+          $("#Pages").val(book.pages);
+          $("#Genre").val(book.genre);
+
+          // Update the form's action URL to include the bookId
+          $("#form").attr("action", `/update_book/${bookId}/`);
+
+          // Intercept the form submission and call the new method
+          $("#form").submit(function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            // Call the new method to submit the form with AJAX
+            editRowWithAjax(bookId);
+          });
+        },
+        error: function (xhr, status, error) {
+          console.error("Error fetching book details:", status, error);
+        },
+      });
+    }
+  }
+
+  function deleteRow(button, bookId) {
+    // Confirm deletion
+    if (confirm("Are you sure you want to delete this book?")) {
+      // Send AJAX request to delete book
+      $.ajax({
+        url: `/delete_book/${bookId}/`,
+        method: "POST",
+        data: {
+          csrfmiddlewaretoken: `{{ csrf_token }}`,
+        },
+        success: function () {
+          // Remove the deleted row from the table
+          $("#" + bookId).remove();
+        },
+        error: function (xhr, status, error) {
+          console.error("Error deleting book:", status, error);
+        },
+      });
+    }
+  }
+
+  function editRowWithAjax(bookId) {
+    $.ajax({
+      url: `/update_book/${bookId}/`,
+      method: "POST", // Change the method to POST if your Django view uses POST
+      data: $("#form").serialize(), // Serialize the form data
+      success: function (response) {
+        if (response.status === "Success") {
+          // Handle success here
+
+          // Update the data on the page
+          alert(response.message);
+          window.location.reload(true);
+
+          console.log("Update successful:", response.message);
+          // You can perform additional actions or display a success message
+        } else {
+          // Handle error here
+          console.error("Update failed:", response.message);
+          // You can display an error message to the user or take other actions
+        }
+      },
+      error: function (xhr, status, error) {
+        console.error("Error updating book:", status, error);
+      },
+    });
+  }
+</script>
+
+{% endblock %}

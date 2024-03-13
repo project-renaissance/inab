@@ -1,0 +1,120 @@
+{% extends 'core/base.html' %} {% block content %}
+<div class="container-fluid py-4 pt-3">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <!-- Increase the column size to make it wider -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Add Book</h5>
+        </div>
+        <div class="card-body">
+          <form method="post" action="/add_book/" id="addBookForm">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="title" class="form-label">Title</label>
+              <input
+                class="form-control"
+                type="text"
+                name="title"
+                id="title"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="author" class="form-label">Author</label>
+              <input
+                class="form-control"
+                type="text"
+                name="author"
+                id="author"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="genre" class="form-label">Genre</label>
+              <input
+                class="form-control"
+                type="text"
+                name="genre"
+                id="genre"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="pages" class="form-label">Pages</label>
+              <input
+                class="form-control"
+                type="number"
+                name="pages"
+                id="pages"
+                required
+              />
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-success btn-lg"
+              onclick="addBook()"
+            >
+              Add Book
+            </button>
+            <!-- Increase the button size -->
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  {% comment %} function changeLibrary(dropdownId, libraryName, libraryId) {
+    var selectedLibrary = libraryName.trim();
+    console.log(selectedLibrary);
+    $("#" + dropdownId).text(selectedLibrary);
+
+    $("#libraryInput").val(libraryId);
+    $("#" + dropdownId)
+      .closest(".dropdown")
+      .find(".dropdown-toggle")
+      .text(selectedLibrary);
+  } {% endcomment %}
+  function addBook() {
+
+    var title = $("#title").val();
+    var author = $("#author").val();
+    var genre = $("#genre").val();
+    var pages = $("#pages").val();
+
+
+      // Check if required fields are not empty
+    if (!title || !pages) {
+        console.error("Error adding book: Title and Pages are required");
+        return false;  // Prevent default form submission
+    }
+
+  // Serialize form data
+    var formData = $("#addBookForm").serialize();
+    //var formData = $("#addBookForm").serialize();
+
+    $.ajax({
+      url: "/add_book/",
+      method: "POST",
+      data: formData,
+      success: function (response) {
+        if (response.success) {
+          // Handle success, e.g., redirect to the book list page
+          alert("Book '" + title + "' created successfully!");
+
+          window.location.href = "/book";
+        } else {
+          // Handle validation errors
+          console.error("Error adding book:", response.errors);
+        }
+      },
+      error: function (xhr, status, error) {
+        console.error("Error adding book:", status, error);
+      },
+    });
+    return false; // Prevent default form submission
+  }
+</script>
+{% endblock %}

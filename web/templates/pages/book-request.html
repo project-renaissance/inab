@@ -1,65 +1,129 @@
-{% extends 'core/base.html' %}
-{% load static %}
-
-{% block content %}
+{% extends 'core/base.html' %} {% load static %} {% block content %}
 
 <div class="container-fluid py-4 pt-3">
   <div class="row">
     <div class="col">
       <div class="card mb-4">
         <div class="card-header pb-0">
-          <div class="row align-items-center">
-            <div class="col">
-                <h6 class="font-weight-bolder">Borrow Records</h6>
+          <div class="d-flex item-center justify-content-between">
+            <div class="p-2 flex-grow-1">
+              <h6 class="font-weight-bolder text-lg">Book Borrow Records</h6>
             </div>
-            <div class="col-2">
-              <div class="input-group">
-                <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
-                <input type="text" class="form-control" placeholder="Type here..." onfocus="focused(this)" onfocusout="defocused(this)">
-              </div>
+            <div class="p-2">
+              <a href="{% url 'add_school' %}" class="btn bg-gradient-success"
+                >Add Borrow Record</a
+              >
+            </div>
+            <div class="p-2">
+              <input
+                id="searchInput"
+                type="text"
+                class="form-control"
+                placeholder="Type here..."
+                onfocus="focused(this)"
+                onfocusout="defocused(this)"
+              />
             </div>
           </div>
         </div>
         <div class="card-body px-2 pt-0 pb-2 pt-2">
           <div class="table-responsive p-0 overflow-hidden">
-            <table class="table align-items-center mb-0">
+            <table
+              class="table align-items-center mb-0 table-striped table-hover"
+            >
               <thead class="h6">
                 <tr>
-                  <th class="text-uppercase text-xxs font-weight-bolder ps-2">Student Name</th>
-                  <th class="align-middle text-uppercase text-xxs font-weight-bolder ps-2">Borrow Report</th>
-                  <th class="align-middle text-uppercase text-xxs font-weight-bolder ps-2">Status</th>
-                  <th class="align-middle text-uppercase text-xxs font-weight-bolder ps-2">Date</th>
+                  <th
+                    class="text-uppercase text-sm font-weight-bolder ps-2"
+                    style="width: 20%"
+                  >
+                    Student ID
+                  </th>
+                  <th class="text-uppercase text-sm font-weight-bolder ps-2">
+                    Borrow Report
+                  </th>
+                  <th
+                    class="align-middle text-uppercase text-sm font-weight-bolder ps-2"
+                  >
+                    Status
+                  </th>
+                  <th
+                    class="align-middle text-uppercase text-sm font-weight-bolder ps-2"
+                  >
+                    Date
+                  </th>
+                  <th
+                    class="align-middle text-uppercase text-sm font-weight-bolder ps-2"
+                  >
+                    Actions
+                  </th>
                 </tr>
               </thead>
-              <tbody id="employeeTable">
+              <tbody id="borrowTable">
                 {% for borrow in borrow_list %}
-                  <tr id="{{ borrow.bookID }}">
-                    <td class="w-50">
-                      <p class="text-xs font-weight-bold mb-0">{{ borrow.studentID.name }}</p>
-                    </td>
-                    <td class="align-middle text-sm">
-                      <p class="text-xs font-weight-bold mb-0">{{ borrow.borrowReport }}</p>
-                    </td>
-                    <td class="align-middle text-sm">
-                        <p class="text-xs font-weight-bold mb-0" style="color: {% if borrow.borrowStatus %}green{% else %}red{% endif %}">
-                            {{ borrow.borrowStatus }}
-                        </p>
-                    </td>                    
-                    <td class="align-middle text-sm">
-                      <p class="text-xs font-weight-bold mb-0">{{ borrow.date }}</p>
-                    </td>
-                    <td class="align-middle text-sm">
-                      <span class="badge badge-sm {% if book.available %}bg-gradient-success{% else %}bg-gradient-danger{% endif %}">{{ book.available }}</span>
-                    </td>
-                    <td class="align-middle text-sm">
-                      <button class="btn btn-icon btn-sm btn-warning btn-tooltip mb-0 p-2" onclick="addRow(this, {{book.id}})" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit" data-container="body" data-animation="true">
-                        <i class="ni ni-archive-2"></i>
-                      </button>
-                      <button class="btn btn-icon btn-sm btn-danger btn-tooltip mb-0 p-2" onclick="deleteUser({{ book.id }})" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete" data-container="body" data-animation="true">
-                        <i class="ni ni-fat-remove 1em"></i>
-                      </button>
-                    </td>
-                  </tr>
+                <tr id="{{ borrow.id}}">
+                  <td class="w-50">
+                    <p class="text-sm font-weight-bold mb-0">
+                      {{ borrow.student_id }}
+                    </p>
+                  </td>
+                  <td class="align-middle text-sm">
+                    <p class="text-sm font-weight-bold mb-0">
+                      {{ borrow.borrowReport }}
+                    </p>
+                  </td>
+                  <td class="align-middle text-sm">
+                    <p
+                      class="text-sm font-weight-bold mb-0"
+                      style="color: {% if borrow.borrowStatus %}green{% else %}red{% endif %}"
+                    >
+                      {{ borrow.borrowStatus }}
+                    </p>
+                  </td>
+                  <td class="align-middle text-sm">
+                    <p class="text-sm font-weight-bold mb-0">
+                      {{ borrow.date }}
+                    </p>
+                  </td>
+                  <td class="align-middle text-sm">
+                    <button
+                      class="btn bg-gradient-warning btn-tooltip mb-0 p-2"
+                      onclick="editRow(this, {{borrow.id}})"
+                      type="button"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Edit book request"
+                      data-container="body"
+                      data-animation="true"
+                    >
+                      Edit
+                    </button>
+                    <button
+                class="btn {% if borrow.borrowStatus %}bg-gradient-danger{% else %}bg-gradient-info{% endif %} btn-tooltip mb-0 p-2"
+    onclick="{% if borrow.borrowStatus %}disapproveUser({{ borrow.id }}){% else %}approveUser({{ borrow.id }}){% endif %}"
+    type="button"
+    data-bs-toggle="tooltip"
+    data-bs-placement="top"
+    title="{% if borrow.borrowStatus %}Disapprove{% else %}Approve{% endif %} book request"
+    data-container="body"
+    data-animation="true"
+>
+    {% if borrow.borrowStatus %}Disapprove{% else %}Approve{% endif %}
+</button>
+                    <button
+                      class="btn bg-gradient-danger btn-tooltip mb-0 p-2"
+                      onclick="deleteUser({{ borrow.id }})"
+                      type="button"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Delete book request"
+                      data-container="body"
+                      data-animation="true"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
                 {% endfor %}
               </tbody>
             </table>
@@ -70,81 +134,117 @@
   </div>
 </div>
 <script>
-    var newRow = $(`{% include 'core/editBox.html' %}`);
-    $("#username").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        if(value !== ''){
-            $.ajax({
-                url: "getSearch",
-                method:"POST",
-                data:{
-                    csrfmiddlewaretoken:`{{csrf_token}}`,
-                    search:value
-                },
-                success:function(data){
-                    $("#searchResult").empty();
-                    if (data.length > 0){
-                        $("#searchResult").addClass('show')
-                        $.each(data, function(id,value){
-                            $("#searchResult").append(
-                                `<li><a class="dropdown-item" href="javascript:keyNames('${value}')">${value}</a></li>`
-                            );
-                        });
-                    }
-                    else{
-                        $("#searchResult").removeClass('show')
-                    }
-                }
-            });
-        }
-        else{
-            $("#searchResult").removeClass('show')
-        }
-    });
-
-    function keyNames(value){
-        $("#username").val(value);
-        $("#searchResult").removeClass('show')
-    }
-
-    function addRow(button, userId) {
-      $('#editBox').remove();
-      var targetRowId = $(button).closest("tr").attr("id");
-      $("#" + targetRowId).after(newRow);
+  var newRow = $(`{% include 'core/editBox.html' %}`);
+  $("#username").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    if (value !== "") {
       $.ajax({
-        url: `/getUserData/${userId}/`,
-        method: 'GET',
+        url: "getSearch",
+        method: "POST",
+        data: {
+          csrfmiddlewaretoken: `{{csrf_token}}`,
+          search: value,
+        },
         success: function (data) {
-            if ('error' in data) {
-                console.error(data.error);
-            } else {
-                console.log(data);
-                //$('#locationDropDown').text(`${data.location} - ${data.cost}`);
-                $('#LegalName').val(data.name);
-                $('#PreferredName').val(data.preferredName);
-                $('#Username').val(data.username);
-                $('#personalEmail').val(data.personalEmail);
-                $('#sonyEmail').val(data.sonyEmail);
-                $('#directManager').val(data.manager);
-                $('#startDate').val(data.startDate);
-                changeGroup('locationDropDown', 'location', `${data.cost} - ${data.location}`);
-                changeGroup('employeeDropdown', 'employee', data.employeeType)
-                changeGroup('permissionDropDown', 'shotgrid', data.shotgrid)
-                getTasks(data.id, data.department, data.role, function() {
-                  userID = data.id;
-                  $.each(data.tasks, function(index, task) {
-                    $('#'+task.name.replace(/[ ,()./]+/g, "")).prop("checked",true);
-                    //$('#EmploymentDocumentation').prop("checked",true);
-                  });
-                });
+          $("#searchResult").empty();
+          if (data.length > 0) {
+            $("#searchResult").addClass("show");
+            $.each(data, function (id, value) {
+              $("#searchResult").append(
+                `<li><a class="dropdown-item" href="javascript:keyNames('${value}')">${value}</a></li>`
+              );
+            });
+          } else {
+            $("#searchResult").removeClass("show");
+          }
+        },
+      });
+    } else {
+      $("#searchResult").removeClass("show");
+    }
+  });
 
-            }
+  function keyNames(value) {
+    $("#username").val(value);
+    $("#searchResult").removeClass("show");
+  }
+
+  function editRow(button, borrowId) {
+    $("#editBox").remove();
+    var targetRowId = $(button).closest("tr").attr("id");
+    $("#" + targetRowId).after(newRow);
+    $.ajax({
+      url: `/getBorrowData/${borrowId}/`,
+      method: "GET",
+      success: function (data) {
+        if ("error" in data) {
+          console.error(data.error);
+        } else {
+          console.log(data);
+          // Update the fields in the edit box based on the data
+          // For example:
+          // $('#fieldId').val(data.field);
+        }
+      },
+      error: function (xhr, status, error) {
+        console.error(error);
+      },
+    });
+  }
+
+  function deleteUser(borrowId) {
+    if (confirm("Are you sure you want to delete this borrow record?")) {
+      $.ajax({
+        url: `/deleteBorrow/${borrowId}/`,
+        method: "POST",
+        data: {
+        csrfmiddlewaretoken: `{{ csrf_token }}`,
+        },
+        success: function () {
+          $("#" + borrowId).remove();
         },
         error: function (xhr, status, error) {
-            console.error(error);
-        }
+          console.error("Error deleting borrow record:", status, error);
+        },
       });
     }
+  }
+
+  function approveUser(borrowId) {
+    if (confirm("Are you sure you want to approve this book borrow request?")) {
+        $.ajax({
+            url: `/approve_borrow/${borrowId}/`,  // Use the URL you defined
+            method: "POST",
+            data: {
+                csrfmiddlewaretoken: `{{ csrf_token }}`,
+            },
+            success: function () {
+                $("#" + borrowId).remove();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error approving borrow record:", status, error);
+            },
+        });
+    }
+}
+
+function disapproveUser(borrowId) {
+    if (confirm("Are you sure you want to disapprove this book borrow request?")) {
+        $.ajax({
+            url: `/disapprove_borrow/${borrowId}/`,  // Use the new URL
+            method: "POST",
+            data: {
+                csrfmiddlewaretoken: `{{ csrf_token }}`,
+            },
+            success: function () {
+                $("#" + borrowId).remove();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error disapproving borrow record:", status, error);
+            },
+        });
+    }
+}
 
 </script>
 

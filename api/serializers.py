@@ -19,7 +19,7 @@ class UserSchema(Schema):
     birthDate: date
     phoneNo: str
     email: str
-    classID: int
+    classroom: int
     role: RoleSchema
     awardList: int
 
@@ -53,7 +53,20 @@ class BookSchema(Schema):
     insertedAt: date
     updatedAt: Optional[str] = None
     deletedAt: Optional[str] = None
-    libraryID_id: int
+    library: int
+
+
+class BookSchemaResponse(Schema):
+    id: int
+    title: str
+    pages: int
+    author: str
+    genre: str
+    publisher: str
+    insertedAt: date
+    updatedAt: Optional[str] = None
+    deletedAt: Optional[str] = None
+    library: int
 
 
 class TeacherSchema(Schema):
@@ -94,7 +107,7 @@ class NilamCreateSchema(Schema):
     author: str
     genre: str
     publisher: str
-    studentID: str
+    student: str
     evaluationComment: str = None
     evaluationStatus: str = None
 
@@ -105,6 +118,5 @@ class NilamSchema(Schema):
     author: str
     genre: str
     publisher: str
-    # studentID_id_id: UsernameSchema
     evaluationComment: Optional[str] = None
     evaluationStatus: Optional[str] = None
