@@ -1,0 +1,74 @@
+{% extends 'core/base.html' %} {% block content %}
+<div class="container-fluid py-4 pt-3">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <!-- Increase the column size to make it wider -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Add Book Request</h5>
+        </div>
+        <div class="card-body">
+          <form method="post" action="/add_book_request" id="BookRequestForm">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="name" class="form-label">Book Name</label>
+              <input
+                class="form-control"
+                type="text"
+                name="name"
+                id="name"
+                required
+              />
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-success btn-lg"
+              onclick="addBookRequest()"
+            >
+              Add Request
+            </button>
+            <!-- Increase the button size -->
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function addBookRequest() {
+
+    var name = $("#name").val();
+
+      // Check if required fields are not empty
+    if (!name ) {
+        console.error("Error borrowing book: Book name are required");
+        return false;  // Prevent default form submission
+    }
+
+  // Serialize form data
+    var formData = $("#BookRequestForm").serialize();
+
+    $.ajax({
+      url: "/add_book_request",
+      method: "POST",
+      data: formData,
+      success: function (response) {
+        if (response.success) {
+          // Handle success, e.g., redirect to the book request list page
+          alert("Book '" + name + "' created successfully!");
+
+          window.location.href = "book-request";
+        } else {
+          // Handle validation errors
+          console.error("Error borrowing book:", response.errors);
+        }
+      },
+      error: function (xhr, status, error) {
+        console.error("Error borrowing book:", status, error);
+      },
+    });
+    return false; // Prevent default form submission
+  }
+</script>
+{% endblock %}

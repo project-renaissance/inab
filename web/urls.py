@@ -21,7 +21,10 @@ from . import views
 from .Views import BookView as bookViews
 from .Views import SchoolView as schoolViews
 from .Views import AuthView as authViews
-from .views import approveBorrowRequest, disapprove_borrow_request
+from .Views import TeacherView as teacherViews
+from .Views import NilamView as nilamViews
+
+# from .views import approveBorrowRequest, disapprove_borrow_request
 
 
 book_urls = [
@@ -32,7 +35,7 @@ book_urls = [
     path(
         "delete_book/<int:book_id>/", bookViews.DeleteBook.as_view(), name="delete_book"
     ),
-    path("add_book/", bookViews.AddBookView.as_view(), name="add_book"),
+    path("add_book", bookViews.AddBookView.as_view(), name="add_book"),
     path("search_books/", bookViews.search_books, name="search_books"),
     path(
         "get_book/<int:book_id>/",
@@ -43,7 +46,7 @@ book_urls = [
 
 school_urls = [
     path("school", schoolViews.SchoolView.as_view(), name="school"),
-    path("add_school/", schoolViews.AddSchoolView.as_view(), name="add_school"),
+    path("add_school", schoolViews.AddSchoolView.as_view(), name="add_school"),
     path(
         "update_school/<str:school_name>/",
         schoolViews.UpdateSchool.as_view(),
@@ -51,22 +54,31 @@ school_urls = [
     ),
 ]
 
-book_records_urls = [
-    path("book-request", views.BookRequestView.as_view(), name="book-request"),
+nilam_urls = [
+    path("book-request", nilamViews.BookRequestView.as_view(), name="book-request"),
     path(
-        "add_book_request/", views.AddBookRequestView.as_view(), name="add_book_request"
+        "add_book_request",
+        nilamViews.AddBookRequestView.as_view(),
+        name="add_book_request",
     ),
     path(
         "approve_borrow/<int:borrow_id>/",
-        approveBorrowRequest,
+        nilamViews.approveBorrowRequest,
         name="approve_borrow_request",
     ),
     path(
         "disapprove_borrow/<int:borrow_id>/",
-        disapprove_borrow_request,
+        nilamViews.disapprove_borrow_request,
         name="disapprove_borrow_request",
     ),
 ]
+
+teacher_urls = [
+    path("teacher", teacherViews.TeacherView.as_view(), name="teacher"),
+    path("add_teacher", teacherViews.AddTeacherView.as_view(), name="add_teacher"),
+]
+
+student_urls = []
 
 auth_urls = [
     path("login", authViews.LoginView.as_view(), name="login"),
@@ -81,9 +93,10 @@ urlpatterns = [
     *auth_urls,
     *book_urls,
     *school_urls,
-    *book_records_urls,
+    *nilam_urls,
+    *teacher_urls,
     path("student", views.StudentView.as_view(), name="student"),
-    path("teacher", views.TeacherView.as_view(), name="teacher"),
+    # path("teacher", views.TeacherView.as_view(), name="teacher"),
     path("profile", views.ProfileView.as_view(), name="profile"),
     path("get_libraries/", views.GetLibrariesView.as_view(), name="get_libraries"),
 ]

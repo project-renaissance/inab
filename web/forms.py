@@ -24,6 +24,15 @@ class SchoolForm(forms.ModelForm):
         ]
 
 
+class TeacherForm(forms.ModelForm):
+    class Meta:
+        model = User
+
+        fields = [
+            "name",
+        ]
+
+
 class StudentRegistrationForm(forms.ModelForm):
     class Meta:
         model = User

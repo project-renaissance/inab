@@ -5,13 +5,13 @@
       <!-- Increase the column size to make it wider -->
       <div class="card">
         <div class="card-header">
-          <h5 class="card-title mb-0">Add School</h5>
+          <h5 class="card-title mb-0">Add Teacher</h5>
         </div>
         <div class="card-body">
-          <form method="post" action="/add_school/" id="addSchoolForm">
+          <form method="post" action="/add_teacher/" id="addTeacherForm">
             {% csrf_token %}
             <div class="mb-3">
-              <label for="name" class="form-label">School Name</label>
+              <label for="name" class="form-label">Teacher Name</label>
               <input
                 class="form-control"
                 type="text"
@@ -24,9 +24,9 @@
             <button
               type="button"
               class="btn btn-success btn-lg"
-              onclick="addSchool()"
+              onclick=""
             >
-              Add School
+              Add Teacher
             </button>
             <!-- Increase the button size -->
           </form>
@@ -36,18 +36,8 @@
   </div>
 </div>
 <script>
-  {% comment %} function changeLibrary(dropdownId, libraryName, libraryId) {
-    var selectedLibrary = libraryName.trim();
-    console.log(selectedLibrary);
-    $("#" + dropdownId).text(selectedLibrary);
 
-    $("#libraryInput").val(libraryId);
-    $("#" + dropdownId)
-      .closest(".dropdown")
-      .find(".dropdown-toggle")
-      .text(selectedLibrary);
-  } {% endcomment %}
-  function addSchool() {
+  {% comment %} function addTeacher() {
 
     var name = $("#name").val();
 
@@ -55,33 +45,33 @@
 
       // Check if required fields are not empty
     if (!name ) {
-        console.error("Error adding school: School name are required");
+        console.error("Error adding teacher: Teacher name are required");
         return false;  // Prevent default form submission
     }
 
   // Serialize form data
-    var formData = $("#addSchoolForm").serialize();
+    var formData = $("#addTeacherForm").serialize();
 
     $.ajax({
-      url: "/add_school/",
+      url: "/add_teacher/",
       method: "POST",
       data: formData,
       success: function (response) {
         if (response.success) {
-          // Handle success, e.g., redirect to the school list page
-          alert("School '" + name + "' created successfully!");
+          // Handle success, e.g., redirect to the teacher list page
+          alert("Teacher '" + name + "' created successfully!");
 
-          window.location.href = "/school";
+          window.location.href = "/teacher";
         } else {
           // Handle validation errors
-          console.error("Error adding school:", response.errors);
+          console.error("Error adding teacher:", response.errors);
         }
       },
       error: function (xhr, status, error) {
-        console.error("Error adding school:", status, error);
+        console.error("Error adding teacher:", status, error);
       },
     });
-    return false; // Prevent default form submission
-  }
+    return false;
+  } {% endcomment %}
 </script>
 {% endblock %}

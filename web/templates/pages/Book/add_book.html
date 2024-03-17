@@ -8,7 +8,7 @@
           <h5 class="card-title mb-0">Add Book</h5>
         </div>
         <div class="card-body">
-          <form method="post" action="/add_book/" id="addBookForm">
+          <form method="post" action="/add_book" id="addBookForm">
             {% csrf_token %}
             <div class="mb-3">
               <label for="title" class="form-label">Title</label>
@@ -96,7 +96,7 @@
     //var formData = $("#addBookForm").serialize();
 
     $.ajax({
-      url: "/add_book/",
+      url: "/add_book",
       method: "POST",
       data: formData,
       success: function (response) {
